@@ -1,40 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct lista_prod{
+
+
+
+
+
+typedef struct lista_caixa_prod{
+    int cod_prod;
+    struct lista_caixa_prod* prox;
+}lista_caixa_prod;
+
+typedef struct caixa{
+    int cod_caixa;
+    lista_caixa_prod* lista_prod;
+    int qtd;
+}caixa;
+
+
+typedef struct NO{
     int cod_prod;
     char* tipo;
     char* descricao;
     int preco; 
-    NO* prox;
-    NO* ant;
+    struct NO* prox;
+    struct  NO* ant;
 }NO;
-
 
 NO *inicio = NULL;
 NO *fim = NULL;
 int tam = 0;
 int id_prod = 0;
 
-typedef struct lista_caixa_prod{
-    int cod_prod;
-    lista_caixa_prod* prox;
-}lista_caixa_prod;
-
-typedef struct caixa{
-    int cod_caixa;
-    lista_caixa_prod lista_prod;
-    int qtd;
-}caixa;
-
-typedef
-
-
-
-
-
-
-void add_lista_prod(tipo,descricao,preco){
+void add_lista_prod(char* tipo,char* descricao,int preco){
     NO * novo = malloc(sizeof(NO));
     id_prod++;
     novo->cod_prod = id_prod;
@@ -57,39 +55,54 @@ void add_lista_prod(tipo,descricao,preco){
         }
 
         else if(inicio->preco > novo->preco){ // caso o item adicionado seja mais barato
+            inicio->ant = novo;
             novo->prox = inicio;
             inicio = novo;
             tam++;
         }   
         else{  // passar por toda a lista até achar a posição que se encaixa
-            NO* aux = malloc(sizeof(NO));
-            aux = inicio;
-            while(aux->preco < novo->preco){
+            NO* aux = inicio;
+            while(aux->preco <= novo->preco){
                 aux = aux->prox;
-            }
-            aux = aux->ant;
-            novo->prox = aux->prox;
-            novo->ant = aux;
-            aux->prox = novo;
+            };
+            aux->ant->prox = novo;
+            novo->prox = aux;
+            novo->ant = aux->ant;
+            aux->ant = novo;
             tam++;
         }
     }
 }
 
-void remove_lista_prod(id){
-    NO* lixo = malloc(sizeof(NO));
-    if(inicio->cod_prod == id){        
-    lixo = inicio;
-    inicio = inicio->prox;
+void remove_lista_prod(int id){
+    NO* lixo = inicio;
+    while(lixo->cod_prod != id){        
+        lixo = lixo->prox;                 //mt mal feito corrigir dps
+    };
     free(lixo);
-    }
+    
+  
 }
 
 void imprimir_lista_prod(){
-    NO* aux = malloc(sizeof(NO));
+    NO* aux = inicio;
     while(aux !=NULL){
         printf("tipo: %s, descricao: %s, preco: %d",aux->tipo,aux->descricao,aux->preco);
         aux= aux->prox;
     }
 }
 
+main(){
+    add_lista_prod("quilha", "qilha pro-max", 8);
+        add_lista_prod("deck", "deck simples", 25);
+        add_lista_prod("leash", "leash ultimate", 5);
+
+        printf("Lista Original:");
+        imprimir_lista_prod();
+
+        remove_lista_prod(2); 
+
+        printf("\nLista apos remover o ID 2:");
+        imprimir_lista_prod();                             //teste lista prod 
+        return(0);
+}
